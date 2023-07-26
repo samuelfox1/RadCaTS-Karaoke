@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Button } from "react-materialize";
+import { Container, Row, Button } from "react-materialize";
 import { Redirect } from "react-router-dom";
 import AddSongModal from "../AddSongModal";
 import UserHighScores from "../UserHighScores";
@@ -182,6 +182,9 @@ function Search({ userData, search, setSearch }) {
           <AddSongModal
             loading={loading}
             userData={userData}
+            searchTitle={
+              formInputs.value /** TODO: how to pass searched value to AddSongModal  to avoid re-typing input*/
+            }
             setLoading={setLoading}
             setMessage={setMessage}
             createNewSession={createNewSession}

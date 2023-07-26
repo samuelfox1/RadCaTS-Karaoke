@@ -9,9 +9,10 @@ export default function AddSongModal({
   setMessage,
   userData,
   createNewSession,
+  searchTitle,
 }) {
   const trigger = <Button className="btn_purple">can't find your song?</Button>;
-  const [inputs, setInputs] = useState({ title: "uptown funk" });
+  const [inputs, setInputs] = useState({ title: searchTitle });
 
   // control form inputs for search
   const handleInputChange = (e) => {
