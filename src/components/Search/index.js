@@ -12,7 +12,7 @@ function Search({ userData, search, setSearch }) {
   const [loading, setLoading] = useState({ search: false, highScores: true });
   const [formInputs, setFormInputs] = useState({ label: "", value: "" });
   const [highScores, setHighScores] = useState({ available: false });
-  const [message, setMessage] = useState({ search: `` });
+  const [message, setMessage] = useState("");
   const [redirectPage, setRedirectPage] = useState();
 
   useEffect(() => {
@@ -140,7 +140,7 @@ function Search({ userData, search, setSearch }) {
       {loading.search ? (
         <Preloader />
       ) : (
-        <h5 className="search__title">{message.search}</h5>
+        <h5 className="search__title">{message}</h5>
       )}
 
       <Row>
@@ -180,7 +180,6 @@ function Search({ userData, search, setSearch }) {
           />
 
           <AddSongModal
-            message={message}
             loading={loading}
             userData={userData}
             setLoading={setLoading}

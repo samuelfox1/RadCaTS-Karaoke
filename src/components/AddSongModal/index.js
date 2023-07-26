@@ -1,15 +1,12 @@
 import React, { useState } from "react";
 import { Modal, Button } from "react-materialize";
-import Preloader from "../Preloader";
 import API from "../../utils/API";
 import "./style.css";
-import { Message } from "@material-ui/icons";
 
 export default function AddSongModal({
   setLoading,
   loading,
   setMessage,
-  message,
   userData,
   createNewSession,
 }) {
@@ -27,7 +24,7 @@ export default function AddSongModal({
   const handleInputSubmit = (e) => {
     e.preventDefault();
     setLoading({ ...loading, search: true });
-    setMessage({ ...message, search: "Searching. . ." });
+    setMessage("Searching. . .");
 
     // send title and artist search as one string with the key of name
     let data = { name: inputs.title };
@@ -41,10 +38,7 @@ export default function AddSongModal({
       })
       .catch((err) => {
         setInputs({ title: "" });
-        setMessage({
-          ...message,
-          search: "Song is not available yet, please try another song",
-        });
+        setMessage("Song is not available yet, please try another song");
         setLoading(false);
         console.log(err);
       });
