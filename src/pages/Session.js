@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Redirect } from "react-router-dom";
 import AudioPlayer from "../components/AudioPlayer";
 import MemberCard from "../components/MemberCard";
@@ -15,7 +15,6 @@ const socket = io.connect(process.env.REACT_APP_SOCKET_URL);
 // const socket = io.connect("https://radcatskaraokeserver.herokuapp.com") // radcats heroku
 // const socket = io.connect("http://radcats-karaoke-server.herokuapp.com")
 // const socket = io.connect("http://localhost:3001")
-const audio = new Audio();
 
 export default function Session({
   userData,
@@ -28,6 +27,7 @@ export default function Session({
   const [lyrics, setLyrics] = useState({ isLoaded: false });
   const [pts, setPts] = useState(0);
   const { id } = useParams();
+  const audioRef = useRef(new Audio());
 
   const handleFinish = () => {
     setIsPlaying(false);
@@ -78,7 +78,7 @@ export default function Session({
 
   // Live Session - Start
 
-  const [member, setMember] = useState(userData);
+  const [member] = useState(userData);
   const [start, setStart] = useState(false);
   const [countdown, setCountdown] = useState();
   const [leaderboard, setLeaderboard] = useState();
@@ -119,6 +119,8 @@ export default function Session({
 
   useEffect(() => {
     function receiveMsg(m) {
+      let message = m;
+      
       if (start) {
         let time = 3;
         setCountdown(time);
@@ -134,12 +136,15 @@ export default function Session({
             setCountdown(time);
           }
         }, 1000);
+        console.log("message", message);
+        console.log("audioRef.current.src", audioRef.current.src);
+        audioRef.current.src = `${process.env.REACT_APP_S3_BUCKET}/audio${message.path}`;
+        console.log("audioRef.current.src", audioRef.current.src);
 
         setTimeout(() => {
-          audio.src = `${process.env.REACT_APP_S3_BUCKET}/audio${m.path}`;
           setIsPlaying(true);
           setSessionData({ ...sessionData, isActive: true });
-          audio
+          audioRef.current
             .play()
             .then((data) => console.log("audio started"))
             .catch((err) => console.log("audio error", err));
@@ -170,7 +175,6 @@ export default function Session({
       ) : (
         <>
           <Header
-            audio={audio}
             userData={userData}
             setUserData={setUserData}
             setIsPlaying={setIsPlaying}
@@ -179,7 +183,7 @@ export default function Session({
             <Col s={12} m={6}>
               <AudioPlayer
                 pts={pts}
-                audio={audio}
+                audioRef={audioRef}
                 start={start}
                 setPts={setPts}
                 lyrics={lyrics}

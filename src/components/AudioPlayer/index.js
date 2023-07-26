@@ -1,74 +1,82 @@
 // source: https://codesandbox.io/s/5wwj02qy7k?file=/src/useAudioPlayer.js:0-1246
-import React, { useState, useEffect } from "react";
-import momentDurationFormatSetup from "moment-duration-format";
+import React, { useState } from "react";
 import useAudioPlayer from "./useAudioPlayer";
 import { Container } from "react-materialize";
 import AudioBottom from "./AudioBottom";
 import KaraokeBox from "../KaraokeBox";
 import AudioTop from "./AudioTop";
 import moment from "moment";
-import "./style.css"
+import "./style.css";
 
+function AudioPlayer({
+  sessionData,
+  setSessionData,
+  isPlaying,
+  setIsPlaying,
+  handleFinish,
+  handlePlaySound,
+  start,
+  setStart,
+  audioRef,
+  pts,
+  setPts,
+  lyrics,
+  hidePlayBtn,
+}) {
+  const { curTime, duration } = useAudioPlayer(
+    isPlaying,
+    setIsPlaying,
+    audioRef
+  );
+  const [language] = useState("en-Us");
 
-function AudioPlayer({ sessionData, setSessionData, isPlaying, setIsPlaying, handleFinish, handlePlaySound, start, setStart, audio, pts, setPts, lyrics, hidePlayBtn }) {
+  const formatDuration = (duration) => {
+    return moment
+      .duration(duration, "seconds")
+      .format("mm:ss", { trim: false });
+  };
 
-    const { curTime, duration, setClickedTime } = useAudioPlayer(isPlaying, setIsPlaying, audio);
-    const [language, setLanguage] = useState('en-Us')
+  const handlePlay = () => {
+    setSessionData({ ...sessionData, isActive: true });
+    setIsPlaying(true);
+  };
+  const handleStop = () => {
+    setIsPlaying(false);
+  };
 
-    const formatDuration = (duration) => {
-        return moment
-            .duration(duration, "seconds")
-            .format("mm:ss", { trim: false });
-    }
+  return (
+    <Container className="center-align">
+      <AudioTop sessionData={sessionData} />
 
-    const handlePlay = () => {
-        setSessionData({ ...sessionData, isActive: true })
-        setIsPlaying(true)
-    }
-    const handleStop = () => {
-        setIsPlaying(false)
-    }
+      <KaraokeBox
+        pts={pts}
+        lyrics={lyrics}
+        setPts={setPts}
+        curTime={curTime}
+        isPlaying={isPlaying}
+        handleFinish={handleFinish}
+        duration={duration}
+        language={language}
+        sessionData={sessionData}
+      />
 
-    return (
-        <Container className="center-align">
-
-            <AudioTop
-                sessionData={sessionData}
-            />
-
-            {/* <FileDrop isPlaying={ isPlaying } /> */}
-
-            <KaraokeBox
-                pts={pts}
-                lyrics={lyrics}
-                setPts={setPts}
-                curTime={curTime}
-                isPlaying={isPlaying}
-                handleFinish={handleFinish}
-                duration={duration}
-                language={language}
-                sessionData={sessionData}
-            />
-
-            {/* <Bar curTime={curTime} duration={duration} onTimeUpdate={(time) => setClickedTime(time)} /> */}
-            <AudioBottom
-                formatDuration={formatDuration}
-                sessionData={sessionData}
-                handlePlay={handlePlay}
-                duration={duration}
-                isPlaying={isPlaying}
-                setIsPlaying={setIsPlaying}
-                curTime={curTime}
-                pts={pts}
-                handleFinish={handleFinish}
-                handlePlaySound={handlePlaySound}
-                start={start}
-                setStart={setStart}
-                hidePlayBtn={hidePlayBtn}
-            />
-
-        </Container>
-    );
+      <AudioBottom
+        formatDuration={formatDuration}
+        sessionData={sessionData}
+        handlePlay={handlePlay}
+        duration={duration}
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        curTime={curTime}
+        pts={pts}
+        handleFinish={handleFinish}
+        handlePlaySound={handlePlaySound}
+        start={start}
+        setStart={setStart}
+        hidePlayBtn={hidePlayBtn}
+      />
+    </Container>
+  );
 }
 
 export default AudioPlayer;

@@ -1,48 +1,37 @@
 // source: https://codesandbox.io/s/5wwj02qy7k?file=/src/useAudioPlayer.js:0-1246
 import { useState, useEffect } from "react";
 
-function useAudioPlayer( isPlaying, setIsPlaying, audio ) {
-    const [duration, setDuration] = useState();
-    const [curTime, setCurTime] = useState();
-    const [clickedTime, setClickedTime] = useState();
+function useAudioPlayer(isPlaying, setIsPlaying, audioRef) {
+  const [duration, setDuration] = useState();
+  const [curTime, setCurTime] = useState();
 
-    useEffect(() => {
+  useEffect(() => {
+    // state setters wrappers
+    const setAudioData = () => {
+      setDuration(audioRef.current.duration);
+      setCurTime(audioRef.current.currentTime);
+    };
 
-        // state setters wrappers
-        const setAudioData = () => {
-            setDuration(audio.duration);
-            setCurTime(audio.currentTime);
-        }
+    const setAudioTime = () => setCurTime(audioRef.current.currentTime);
 
-        const setAudioTime = () => setCurTime(audio.currentTime);
+    // DOM listeners: update React state on DOM events
+    audioRef.current.addEventListener("loadeddata", setAudioData);
 
-        // DOM listeners: update React state on DOM events
-        audio.addEventListener("loadeddata", setAudioData);
+    audioRef.current.addEventListener("timeupdate", setAudioTime);
 
-        audio.addEventListener("timeupdate", setAudioTime);
+    // effect cleanup
+    return () => {
+      audioRef.current.removeEventListener("loadeddata", setAudioData);
+      audioRef.current.removeEventListener("timeupdate", setAudioTime);
+    };
+  });
 
-        // React state listeners: update DOM on React state changes
-        isPlaying ? audio.play() : audio.pause();
-
-        if (clickedTime && clickedTime !== curTime) {
-            audio.currentTime = clickedTime;
-            setClickedTime(null);
-        }
-
-        // effect cleanup
-        return () => {
-            audio.removeEventListener("loadeddata", setAudioData);
-            audio.removeEventListener("timeupdate", setAudioTime);
-        }
-    });
-
-    return {
-        curTime,
-        duration,
-        isPlaying,
-        setIsPlaying,
-        setClickedTime
-    }
+  return {
+    curTime,
+    duration,
+    isPlaying,
+    setIsPlaying,
+  };
 }
 
 export default useAudioPlayer;
