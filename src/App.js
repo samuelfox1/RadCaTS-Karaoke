@@ -41,7 +41,9 @@ function App() {
           loginSuccess("checkWebToken", res);
         })
         .catch((err) => {
-          console.log("checkWebToken", err);
+          console.log("logging out:", err.message);
+          localStorage.removeItem("radcatsInfo");
+          setUserData({});
         });
     }
   };
@@ -59,6 +61,7 @@ function App() {
       records: res.data.user.records,
       profilePicture: res.data.user.profilePicture,
     };
+
     localStorage.setItem("radcatsInfo", JSON.stringify(radcatsInfo));
 
     setUserData({
