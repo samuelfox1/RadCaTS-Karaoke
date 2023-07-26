@@ -26,14 +26,14 @@ export default function Session({
   setIsPlaying,
 }) {
   const [lyrics, setLyrics] = useState({ isLoaded: false });
-  const [pts, setPts] = useState({ pts: 0 });
+  const [pts, setPts] = useState(0);
   const { id } = useParams();
 
   const handleFinish = () => {
     setIsPlaying(false);
 
     const localData = JSON.parse(localStorage.getItem("radcatsInfo"));
-    const dataObj = { token: localData.token, score: pts.pts };
+    const dataObj = { token: localData.token, score: pts };
 
     API.finishSession(id, dataObj)
       .then((data) => {
@@ -52,7 +52,7 @@ export default function Session({
           hostId: data.data.host,
           songName: data.data.karaokeSong.name,
           artist: data.data.karaokeSong.artist,
-          mixed: data.data.karaokeSong.mixed,
+          bucketKey: data.data.karaokeSong.bucketKey,
           sessionId: data.data._id,
           songId: data.data.karaokeSong._id,
           // lyrics: data.data.karaokeLyrics
@@ -100,7 +100,7 @@ export default function Session({
   }
 
   function handlePlaySound() {
-    socket.emit("play", id, { path: sessionData.mixed });
+    socket.emit("play", id, { path: sessionData.bucketKey });
   }
 
   useEffect(() => {
@@ -136,13 +136,13 @@ export default function Session({
         }, 1000);
 
         setTimeout(() => {
-          audio.src = m.path;
+          audio.src = `${process.env.REACT_APP_S3_BUCKET}/audio${m.path}`;
           setIsPlaying(true);
-          setSessionData({ ...sessionData, isActive: true }); // sjf added 3/23/2021 to track ready/finish button for audio player bottom
+          setSessionData({ ...sessionData, isActive: true });
           audio
             .play()
             .then((data) => console.log("audio started"))
-            .catch((err) => console.log("audio error", err)); // sjf added 3/23/2021 added to catch random play errors
+            .catch((err) => console.log("audio error", err));
         }, 5000);
       }
     }
