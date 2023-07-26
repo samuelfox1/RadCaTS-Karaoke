@@ -19,13 +19,20 @@ export default function EditLyrics({
   const { id } = useParams();
   const [lyrics, setLyrics] = useState([]);
   const [audioSrc, setAudioSrc] = useState();
+  const [googleQuery, setGoogleQuery] = useState({});
   let [index, setIndex] = useState(0);
-  const audio = useRef(null);
+  const audioRef = useRef(null);
   const [lyricsFile, setLyricsFile] = useState({});
 
   const startSession = () => {
     API.startSession(id)
       .then((data) => {
+        const formattedQuery =
+          `${data.data.karaokeSong.name} ${data.data.karaokeSong.artist} lyrics`.replaceAll(
+            " ",
+            "+"
+          );
+        setGoogleQuery(formattedQuery);
         setSessionData({
           ...sessionData,
           hostId: data.data.host,
@@ -72,10 +79,10 @@ export default function EditLyrics({
   const handleAudioPace = (operation) => {
     switch (operation) {
       case "-":
-        audio.current.currentTime -= 2;
+        audioRef.current.currentTime -= 2;
         break;
       case "+":
-        audio.current.currentTime += 2;
+        audioRef.current.currentTime += 2;
         break;
       default:
         break;
@@ -87,7 +94,7 @@ export default function EditLyrics({
     switch (operation) {
       case "add":
         lyricsCopy =
-          getTimestamp(audio.current.currentTime) +
+          getTimestamp(audioRef.current.currentTime) +
           removeTimestamp(lyrics[index]);
         lyrics[index] = lyricsCopy;
         setIndex((index = index + 1));
@@ -222,6 +229,25 @@ export default function EditLyrics({
         <div>
           <h1>Lyrics Editor Tool</h1>
           <div>
+            <p>
+              1.{" "}
+              <a
+                href={`https://www.google.com/search?q=${googleQuery}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                find lyrics on google
+              </a>{" "}
+              & copy to clipboard
+            </p>
+            <p>2. paste lyrics into text box below</p>
+            <p>(Note: a timestamp can be added for each new line)</p>
+            <p>
+              3. click 'play' to start the song, then click "add timestamp" just
+              before the artist will sing first word for the highlighted line
+              below
+            </p>
+
             <Textarea
               name="lyrics"
               onChange={handleLyricsChange}
@@ -240,7 +266,7 @@ export default function EditLyrics({
           >
             <audio
               src={`${process.env.REACT_APP_S3_BUCKET}/audio${audioSrc}`}
-              ref={audio}
+              ref={audioRef}
               controls
             ></audio>
             <Button
