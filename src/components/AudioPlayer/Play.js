@@ -2,16 +2,7 @@
 import React from "react";
 import { PlayCircleFilled } from "@material-ui/icons";
 
-export default function Play({
-  handleClick,
-  emitSessionPlayEvent,
-  hidePlayBtn,
-}) {
-  const onClick = (e) => {
-    handleClick();
-    emitSessionPlayEvent();
-  };
-
+export default function Play({ onClick, hidePlayBtn }) {
   return (
     <div>
       <button

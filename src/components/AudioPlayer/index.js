@@ -5,12 +5,10 @@ import { Container } from "react-materialize";
 import AudioBottom from "./AudioBottom";
 import KaraokeBox from "../KaraokeBox";
 import AudioTop from "./AudioTop";
-import moment from "moment";
 import "./style.css";
 
 function AudioPlayer({
   sessionData,
-  setSessionData,
   isPlaying,
   setIsPlaying,
   handleFinish,
@@ -26,44 +24,29 @@ function AudioPlayer({
   const { curTime, duration } = useAudioPlayer(setIsPlaying, audioRef);
   const [language] = useState("en-Us");
 
-  const formatDuration = (duration) => {
-    return moment
-      .duration(duration, "seconds")
-      .format("mm:ss", { trim: false });
-  };
-
-  const handlePlay = () => {
-    setSessionData({ ...sessionData, isActive: true });
-    setIsPlaying(true);
-  };
-  // const handleStop = () => {
-  //   setIsPlaying(false);
-  // };
-
   return (
     <Container className="center-align">
       <AudioTop sessionData={sessionData} />
 
       <KaraokeBox
         pts={pts}
-        lyrics={lyrics}
         setPts={setPts}
+        lyrics={lyrics}
         curTime={curTime}
-        isPlaying={isPlaying}
-        handleFinish={handleFinish}
         duration={duration}
         language={language}
+        isPlaying={isPlaying}
         sessionData={sessionData}
+        handleFinish={handleFinish}
       />
 
       <AudioBottom
         pts={pts}
-        handlePlay={handlePlay}
-        emitSessionPlayEvent={emitSessionPlayEvent}
         start={start}
         setStart={setStart}
         hidePlayBtn={hidePlayBtn}
         sessionData={sessionData}
+        emitSessionPlayEvent={emitSessionPlayEvent}
       />
     </Container>
   );

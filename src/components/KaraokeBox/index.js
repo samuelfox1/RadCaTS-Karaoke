@@ -7,14 +7,14 @@ import LyricsContainer from "../LyricsContainer/";
 import "./style.css";
 
 function KaraokeBox({
-  curTime,
-  isPlaying,
   pts,
   setPts,
-  language,
-  sessionData,
   lyrics,
+  curTime,
   duration,
+  language,
+  isPlaying,
+  sessionData,
   handleFinish,
 }) {
   // store user mic inputs here with timestamp
@@ -31,7 +31,7 @@ function KaraokeBox({
   ]);
 
   // deconstructed properties needed from the WebSpeechAPI / react-speech-recognition
-  const { listening, finalTranscript, resetTranscript } =
+  const { /*listening,*/ finalTranscript, resetTranscript } =
     useSpeechRecognition();
 
   // activate / deactivate mic when play/pause is clicked
@@ -83,8 +83,8 @@ function KaraokeBox({
             duration={duration}
             isPlaying={isPlaying}
             userInput={userInput}
-            handleFinish={handleFinish}
             sessionData={sessionData}
+            handleFinish={handleFinish}
           />
         </Col>
       </Row>
