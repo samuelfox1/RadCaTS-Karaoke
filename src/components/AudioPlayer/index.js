@@ -13,8 +13,8 @@ function AudioPlayer({
   setIsPlaying,
   handleFinish,
   emitSessionPlayEvent,
-  start,
-  setStart,
+  isReady,
+  setIsReady,
   audioRef,
   pts,
   setPts,
@@ -42,8 +42,8 @@ function AudioPlayer({
 
       <AudioBottom
         pts={pts}
-        start={start}
-        setStart={setStart}
+        isReady={isReady}
+        setIsReady={setIsReady}
         hidePlayBtn={hidePlayBtn}
         sessionData={sessionData}
         emitSessionPlayEvent={emitSessionPlayEvent}

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, Redirect } from "react-router-dom";
 import AudioPlayer from "../components/AudioPlayer";
 import MemberCard from "../components/MemberCard";
-import { Row, Col } from "react-materialize";
+import { Row, Col, Button } from "react-materialize";
 import Header from "../components/Header";
 import API from "../utils/API";
 import "../App.css";
@@ -15,6 +15,7 @@ const socket = io.connect(process.env.REACT_APP_SOCKET_URL);
 // const socket = io.connect("https://radcatskaraokeserver.herokuapp.com") // radcats heroku
 // const socket = io.connect("http://radcats-karaoke-server.herokuapp.com")
 // const socket = io.connect("http://localhost:3001")
+const defaultCopyBtnText = "copy session url (invite a friend to sing along!)";
 
 export default function Session({
   userData,
@@ -27,6 +28,7 @@ export default function Session({
   const [lyrics, setLyrics] = useState({ isLoaded: false });
   const [pts, setPts] = useState(0);
   const { id } = useParams();
+  const [copyBtnText, setCopyBtnText] = useState(defaultCopyBtnText);
   const audioRef = useRef(new Audio());
 
   const handleFinish = () => {
@@ -74,12 +76,15 @@ export default function Session({
 
   useEffect(() => {
     startSession();
+    if (userData.isLoggedIn) {
+      localStorage.removeItem("active-session-url");
+    }
   }, []);
 
   // Live Session - Start
 
   const [member] = useState(userData);
-  const [start, setStart] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const [countdown, setCountdown] = useState();
   const [leaderboard, setLeaderboard] = useState();
 
@@ -122,7 +127,7 @@ export default function Session({
     function receiveMsg(m) {
       let message = m;
 
-      if (start) {
+      if (isReady) {
         let time = 3;
         setCountdown(time);
         timer = setInterval(() => {
@@ -156,7 +161,7 @@ export default function Session({
       clearInterval(timer);
       socket.off("play", receiveMsg);
     };
-  }, [start]);
+  }, [isReady]);
 
   useEffect(() => {
     socket.emit("points", id, member.id, pts, (users) => handlePts(users));
@@ -168,10 +173,29 @@ export default function Session({
 
   // Live Session - Ends
 
+  const handleShareSession = async () => {
+    console.log("clicked");
+    await navigator.clipboard.writeText(window.location.href);
+    setCopyBtnText("copied!");
+    setTimeout(() => {
+      setCopyBtnText(defaultCopyBtnText);
+    }, 3000);
+  };
+
+  const handleRedirect = () => {
+    console.log("handleRedirect");
+    const url = window.location.href;
+    if (url.includes("/session/")) {
+      localStorage.setItem("active-session-url", url);
+    }
+
+    return <Redirect to="/" />;
+  };
+
   return (
     <div className="pageContents">
       {!userData.isLoggedIn ? (
-        <Redirect to="/" />
+        handleRedirect()
       ) : (
         <>
           <Header
@@ -184,10 +208,10 @@ export default function Session({
               <AudioPlayer
                 pts={pts}
                 audioRef={audioRef}
-                start={start}
+                isReady={isReady}
                 setPts={setPts}
                 lyrics={lyrics}
-                setStart={setStart}
+                setIsReady={setIsReady}
                 userData={userData}
                 isPlaying={isPlaying}
                 sessionData={sessionData}
@@ -212,6 +236,14 @@ export default function Session({
             <Col s={12} m={6}>
               <h4>Leaderboard</h4>
               <div>{leaderboard}</div>
+              {isPlaying === false ? (
+                <Button
+                  className="ready_button btn_purple"
+                  onClick={handleShareSession}
+                >
+                  {copyBtnText}
+                </Button>
+              ) : null}
             </Col>
           </Row>
         </>

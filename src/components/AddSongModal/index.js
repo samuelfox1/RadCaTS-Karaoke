@@ -37,11 +37,10 @@ export default function AddSongModal({
         setLoading(false);
         setInputs({ title: "" });
       })
-      .catch((err) => {
+      .catch(() => {
         setInputs({ title: "" });
         setMessage("Song is not available yet, please try another song");
         setLoading(false);
-        console.log(err);
       });
   };
 

@@ -6,13 +6,13 @@ import { Row, Col, Button } from "react-materialize";
 function AudioBottom({
   pts,
   emitSessionPlayEvent,
-  start,
-  setStart,
+  isReady,
+  setIsReady,
   hidePlayBtn,
   sessionData,
 }) {
   const handleStart = () => {
-    setStart(true);
+    setIsReady(true);
   };
 
   return (
@@ -26,10 +26,10 @@ function AudioBottom({
 
         <Col s={4}>
           {
-            !sessionData.isActive && !start ? (
+            !sessionData.isActive && !isReady ? (
               <Button
                 className="ready_button btn_purple"
-                style={start ? { backgroundColor: "red" } : null}
+                style={isReady ? { backgroundColor: "red" } : null}
                 onClick={handleStart}
               >
                 Ready
@@ -40,7 +40,7 @@ function AudioBottom({
         </Col>
 
         <Col s={4}>
-          {!sessionData.isActive && start ? (
+          {!sessionData.isActive && isReady ? (
             <Play onClick={emitSessionPlayEvent} hidePlayBtn={hidePlayBtn} />
           ) : null}
         </Col>

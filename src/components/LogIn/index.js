@@ -32,8 +32,15 @@ function LogIn({ loginSuccess, setLoadingUser, setMessage }) {
     API.login(formInputs)
       .then((res) => {
         setLoadingUser(false);
-        if (res.data.err) setMessage(`please try again`);
-        else loginSuccess("login", res);
+        if (res.data.err) {
+          setMessage(`please try again`);
+        } else {
+          const activeSessionUrl = localStorage.getItem("active-session-url");
+          if (activeSessionUrl) {
+            window.location.href = activeSessionUrl;
+          }
+          loginSuccess("login", res);
+        }
       })
       .catch((err) => {
         console.log(err);
