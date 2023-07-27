@@ -106,7 +106,7 @@ function App() {
           />
         </Route>
 
-        <Route exact path="/api/session/:id">
+        <Route exact path="/session/:id">
           <Session
             isPlaying={isPlaying}
             setIsPlaying={setIsPlaying}
@@ -117,9 +117,9 @@ function App() {
           />
         </Route>
 
-        <Route exact path="/api/user/:id">
+        {/* <Route exact path="/api/user/:id">
           <Session userData={userData} setUserData={setUserData} />
-        </Route>
+        </Route> */}
       </Switch>
     </Router>
   );

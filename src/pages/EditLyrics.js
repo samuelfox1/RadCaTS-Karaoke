@@ -69,7 +69,7 @@ export default function EditLyrics({
   }, []);
 
   const handleSkip = () => {
-    setRedirectPage(<Redirect to={`/api/session/${id}`} />);
+    setRedirectPage(<Redirect to={`/session/${id}`} />);
   };
 
   const handleLyricsChange = (e) => {
@@ -173,7 +173,7 @@ export default function EditLyrics({
     API.addLyricsToSession(data)
       .then(() => {
         // console.log("add lyrics to session")
-        setRedirectPage(<Redirect to={`/api/session/${id}`} />);
+        setRedirectPage(<Redirect to={`/session/${id}`} />);
       })
       .catch((err) => {
         console.log(err);

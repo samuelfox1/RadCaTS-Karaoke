@@ -99,7 +99,7 @@ export default function Session({
     );
   }
 
-  function handlePlaySound() {
+  function emitSessionPlayEvent() {
     socket.emit("play", id, { path: sessionData.bucketKey });
   }
 
@@ -118,42 +118,42 @@ export default function Session({
   }, [userData]);
 
   useEffect(() => {
+    let timer;
     function receiveMsg(m) {
       let message = m;
-      
+
       if (start) {
         let time = 3;
         setCountdown(time);
-        const timer = setInterval(() => {
+        timer = setInterval(() => {
           if (time === 1) {
             time = time - 1;
             setCountdown("Start");
           } else if (time === 0) {
-            clearInterval(timer);
             setCountdown("hide");
+            clearInterval(timer);
+            setIsPlaying(true);
+            setSessionData({ ...sessionData, isActive: true });
+            audioRef.current
+              .play()
+              .then((data) => console.log("audio started"))
+              .catch((err) => console.log("audio error", err));
           } else {
             time = time - 1;
             setCountdown(time);
           }
         }, 1000);
+
         console.log("message", message);
         console.log("audioRef.current.src", audioRef.current.src);
         audioRef.current.src = `${process.env.REACT_APP_S3_BUCKET}/audio${message.path}`;
         console.log("audioRef.current.src", audioRef.current.src);
-
-        setTimeout(() => {
-          setIsPlaying(true);
-          setSessionData({ ...sessionData, isActive: true });
-          audioRef.current
-            .play()
-            .then((data) => console.log("audio started"))
-            .catch((err) => console.log("audio error", err));
-        }, 5000);
       }
     }
     socket.on("play", receiveMsg);
 
     return () => {
+      clearInterval(timer);
       socket.off("play", receiveMsg);
     };
   }, [start]);
@@ -194,7 +194,7 @@ export default function Session({
                 handleFinish={handleFinish}
                 setIsPlaying={setIsPlaying}
                 setSessionData={setSessionData}
-                handlePlaySound={handlePlaySound}
+                emitSessionPlayEvent={emitSessionPlayEvent}
                 hidePlayBtn={
                   member.id !== sessionData.hostId ? "none" : "contents"
                 }

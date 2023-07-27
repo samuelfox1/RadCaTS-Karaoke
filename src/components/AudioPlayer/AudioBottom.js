@@ -5,11 +5,8 @@ import { Row, Col, Button } from "react-materialize";
 
 function AudioBottom({
   pts,
-  isPlaying,
-  setIsPlaying,
-  handleFinish,
   handlePlay,
-  handlePlaySound,
+  emitSessionPlayEvent,
   start,
   setStart,
   hidePlayBtn,
@@ -47,10 +44,7 @@ function AudioBottom({
           {!sessionData.isActive && start ? (
             <Play
               handleClick={handlePlay}
-              handlePlaySound={handlePlaySound}
-              setStart={setStart}
-              isPlaying={isPlaying}
-              setIsPlaying={setIsPlaying}
+              emitSessionPlayEvent={emitSessionPlayEvent}
               hidePlayBtn={hidePlayBtn}
             />
           ) : null}

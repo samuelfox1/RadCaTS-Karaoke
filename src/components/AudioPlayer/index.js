@@ -14,7 +14,7 @@ function AudioPlayer({
   isPlaying,
   setIsPlaying,
   handleFinish,
-  handlePlaySound,
+  emitSessionPlayEvent,
   start,
   setStart,
   audioRef,
@@ -23,11 +23,7 @@ function AudioPlayer({
   lyrics,
   hidePlayBtn,
 }) {
-  const { curTime, duration } = useAudioPlayer(
-    isPlaying,
-    setIsPlaying,
-    audioRef
-  );
+  const { curTime, duration } = useAudioPlayer(setIsPlaying, audioRef);
   const [language] = useState("en-Us");
 
   const formatDuration = (duration) => {
@@ -40,9 +36,9 @@ function AudioPlayer({
     setSessionData({ ...sessionData, isActive: true });
     setIsPlaying(true);
   };
-  const handleStop = () => {
-    setIsPlaying(false);
-  };
+  // const handleStop = () => {
+  //   setIsPlaying(false);
+  // };
 
   return (
     <Container className="center-align">
@@ -61,19 +57,13 @@ function AudioPlayer({
       />
 
       <AudioBottom
-        formatDuration={formatDuration}
-        sessionData={sessionData}
-        handlePlay={handlePlay}
-        duration={duration}
-        isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
-        curTime={curTime}
         pts={pts}
-        handleFinish={handleFinish}
-        handlePlaySound={handlePlaySound}
+        handlePlay={handlePlay}
+        emitSessionPlayEvent={emitSessionPlayEvent}
         start={start}
         setStart={setStart}
         hidePlayBtn={hidePlayBtn}
+        sessionData={sessionData}
       />
     </Container>
   );
