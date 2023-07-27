@@ -18,6 +18,7 @@ function Search({ userData, search, setSearch }) {
   useEffect(() => {
     getSongs();
   }, [userData]);
+
   useEffect(() => {
     if (loading.search) {
       setMessage("searching");
@@ -25,12 +26,7 @@ function Search({ userData, search, setSearch }) {
   }, [loading]);
 
   const handleInputChange = (e) => {
-    // console.log(e)
-    if (e) {
-      setFormInputs({ ...formInputs, label: e.label, value: e.value });
-    } else {
-      setFormInputs({ ...formInputs, label: null, value: null });
-    }
+    setFormInputs({ ...formInputs, label: e.label, value: e.value });
   };
 
   const handleSelectClick = () => {

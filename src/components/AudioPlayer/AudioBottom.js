@@ -2,7 +2,6 @@
 import React from "react";
 import Play from "./Play";
 import { Row, Col, Button } from "react-materialize";
-import Pause from "./Pause";
 
 function AudioBottom({
   pts,
@@ -45,8 +44,6 @@ function AudioBottom({
         </Col>
 
         <Col s={4}>
-          {/* <span className="bar__time">{formatDuration(curTime)} / {formatDuration(duration)}</span> */}
-
           {!sessionData.isActive && start ? (
             <Play
               handleClick={handlePlay}
