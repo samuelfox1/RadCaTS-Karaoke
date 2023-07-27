@@ -182,7 +182,7 @@ export default function EditLyrics({
 
   return (
     <Container className="pageContents lyrics">
-      {/* {userData.isLoggedIn ? <Redirect to="/" /> : null} */}
+      {userData.isLoggedIn === false ? <Redirect to="/" /> : null}
 
       <Header
         userData={userData}
