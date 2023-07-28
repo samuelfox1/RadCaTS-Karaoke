@@ -22,9 +22,9 @@
     "react-scripts": "4.0.2",
     "react-select": "^4.1.0",
     "react-speech-recognition": "^3.6.0",
-    "socket.io-client": "^3.1.2",
     "react-three-fiber": "^5.3.19",
     "rxjs": "^6.6.6",
+    "socket.io-client": "^3.1.2",
     "three": "^0.125.2",
     "web-vitals": "^1.1.0"
   },
@@ -40,16 +40,12 @@
       "react-app/jest"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }

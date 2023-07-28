@@ -15,7 +15,21 @@ body {
   top: 0;
   left: 50%;
   width: 100%;
+  height: 100%;
   transform: translate(-50%, 0%);
+  overflow: scroll;
+}
+
+html {
+  overflow: scroll;
+}
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
+}
+
+.content_row {
+  margin-top: 5px;
 }
 
 header {
@@ -34,6 +48,10 @@ button.btn_purple {
   margin-bottom: 0;
   background-color: rgb(89, 41, 167);
   border-radius: .5rem;
+}
+
+button.btn_blue {
+  background-color: #36618c;
 }
 
 h1 {

@@ -1,78 +1,55 @@
 // source: https://codesandbox.io/s/5wwj02qy7k?file=/src/useAudioPlayer.js:0-1246
-import React, { useState, useEffect } from "react";
-import momentDurationFormatSetup from "moment-duration-format";
+import React, { useState } from "react";
 import useAudioPlayer from "./useAudioPlayer";
+import { Container } from "react-materialize";
 import AudioBottom from "./AudioBottom";
 import KaraokeBox from "../KaraokeBox";
-import Bar from "./Bar"
 import AudioTop from "./AudioTop";
-import moment from "moment";
-import "./style.css"
+import "./style.css";
 
+function AudioPlayer({
+  sessionData,
+  isPlaying,
+  setIsPlaying,
+  handleFinish,
+  emitSessionPlayEvent,
+  isReady,
+  setIsReady,
+  audioRef,
+  pts,
+  setPts,
+  lyrics,
+  hidePlayBtn,
+}) {
+  const { curTime, duration } = useAudioPlayer(setIsPlaying, audioRef);
+  const [language] = useState("en-Us");
 
-function AudioPlayer({ sessionData, isPlaying, setIsPlaying, handlePlaySound, start, setStart, audio, pts, setPts, lyrics, hidePlayBtn }) {
+  return (
+    <Container className="center-align">
+      <AudioTop sessionData={sessionData} />
 
-    const { curTime, duration, setClickedTime } = useAudioPlayer(isPlaying, setIsPlaying, audio);
-    const [language, setLanguage] = useState('en-Us')
+      <KaraokeBox
+        pts={pts}
+        setPts={setPts}
+        lyrics={lyrics}
+        curTime={curTime}
+        duration={duration}
+        language={language}
+        isPlaying={isPlaying}
+        sessionData={sessionData}
+        handleFinish={handleFinish}
+      />
 
-    const formatDuration = (duration) => {
-        return moment
-            .duration(duration, "seconds")
-            .format("mm:ss", { trim: false });
-    }
-
-    const handlePlay = () => {
-
-        console.log('isPlaying', true)
-        setIsPlaying(true)
-    }
-
-    const handleStop = () => {
-
-        console.log('isPlaying', false)
-        setIsPlaying(false)
-
-    }
-
-    return (
-        <div className="container">
-
-            <AudioTop
-                sessionData={sessionData}
-            />
-
-            <KaraokeBox
-                pts={pts}
-                lyrics={lyrics}
-                setPts={setPts}
-                curTime={curTime}
-                duration={duration}
-                language={language}
-                isPlaying={isPlaying}
-                handleStop={handleStop}
-                sessionData={sessionData}
-                formatDuration={formatDuration}
-            />
-
-            {/* <Bar curTime={curTime} duration={duration} onTimeUpdate={(time) => setClickedTime(time)} /> */}
-            {/* <span className="bar__time">{formatDuration(curTime)} / {formatDuration(duration)}</span> */}
-
-            <AudioBottom
-                handlePlaySound={handlePlaySound}
-                sessionData={sessionData}
-                handlePlay={handlePlay}
-                isPlaying={isPlaying}
-                setIsPlaying={setIsPlaying}
-                curTime={curTime}
-                pts={pts}
-                handlePlaySound={handlePlaySound}
-                start={start}
-                setStart={setStart}
-                hidePlayBtn={hidePlayBtn}
-            />
-
-        </div>
-    );
+      <AudioBottom
+        pts={pts}
+        isReady={isReady}
+        setIsReady={setIsReady}
+        hidePlayBtn={hidePlayBtn}
+        sessionData={sessionData}
+        emitSessionPlayEvent={emitSessionPlayEvent}
+      />
+    </Container>
+  );
 }
 
 export default AudioPlayer;

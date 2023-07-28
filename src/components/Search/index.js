@@ -1,124 +1,206 @@
-import React, { useState, useEffect } from 'react'
-import { Container, Button } from 'react-materialize';
-import { Redirect } from 'react-router-dom';
-import AddSongModal from "../AddSongModal"
-import Preloader from "../Preloader"
-import Select from 'react-select';
-import API from '../../utils/API';
-import "./style.css"
+import React, { useState, useEffect } from "react";
+import { Container, Row, Button } from "react-materialize";
+import { Redirect } from "react-router-dom";
+import AddSongModal from "../AddSongModal";
+import UserHighScores from "../UserHighScores";
+import Preloader from "../Preloader";
+import Select from "react-select";
+import API from "../../utils/API";
+import "./style.css";
 
-function Search({ userData }) {
+function Search({ userData, search, setSearch }) {
+  const [loading, setLoading] = useState({ search: false, highScores: true });
+  const [formInputs, setFormInputs] = useState({ label: "", value: "" });
+  const [highScores, setHighScores] = useState({ available: false });
+  const [message, setMessage] = useState("");
+  const [redirectPage, setRedirectPage] = useState();
 
-    const [formInputs, setFormInputs] = useState({ label: '', value: '', })
-    const [message, setMessage] = useState(`What's your favorite song?`)
-    const [redirectPage, setRedirectPage] = useState()
-    const [search, setSearch] = useState(['search'])
-    const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    getSongs();
+  }, [userData]);
 
-    useEffect(() => { getSongs() }, [])
-
-    useEffect(() => { if (loading) { setMessage('searching') } }, [loading])
-
-
-    const handleInputChange = e => {
-        console.log(e)
-        if (e) { setFormInputs({ ...formInputs, label: e.label, value: e.value, }) }
-        else { setFormInputs({ ...formInputs, label: null, value: null, }) }
+  useEffect(() => {
+    if (loading.search) {
+      setMessage("searching");
     }
+  }, [loading]);
 
-    const handleSelectClick = () => {
-        console.log('clicked')
-        getSongs()
+  const handleInputChange = (e) => {
+    setFormInputs({ ...formInputs, label: e.label, value: e.value });
+  };
+
+  const handleSelectClick = () => {
+    getSongs();
+  };
+
+  const getSongs = (e) => {
+    if (e) {
+      e.preventDefault();
     }
+    API.getAllSongs()
+      .then((data) => {
+        const formatted = [];
+        data.data.map((song) => {
+          let obj = { label: `${song.name} - ${song.artist}`, value: song._id };
+          formatted.push(obj);
+        });
+        setSearch(formatted);
+        formatHighScores(data.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
-    const getSongs = (e) => {
-        if (e) { e.preventDefault() }
-        API.getAllSongs()
-            .then(data => {
-                const formatted = []
-                data.data.map(song => {
-                    let obj = { label: `${song.name} - ${song.artist}`, value: song._id }
-                    formatted.push(obj)
-                })
-                setSearch(formatted)
-            })
-            .catch(err => { console.error(err) })
-    }
-
-
-
-    const handleLyrics = e => {
-        e.preventDefault()
-        const newSessionObj = { host: userData.id, karaokeSong: formInputs.value }
-        createNewSession(newSessionObj)
-
-    }
-
-
-    const createNewSession = (newSessionObj => {
-        API.createSession(newSessionObj)
-            .then(sessionId => { setRedirectPage(<Redirect to={`/lyrics/${sessionId.data}`} />) })
-            .catch(err => { console.log(err) })
-
-    })
-
-    return (
-
-        <Container className="center-align">
-
-            <h4 className="search__title">{message}</h4>
-
-            {loading
-
-                ? <Preloader />
-                : null
-
+  const formatHighScores = (songs) => {
+    if (userData.records) {
+      const userSessionData = []; // store high scores for user here
+      userData.records.map((data) => {
+        // loop through session records for this user
+        const thisSongsData = {
+          // new object for each song id and score for the song
+          songId: data.karaokeSong, // id# of song
+        };
+        if (data.scores) {
+          // array of objects with userid#:score, ex-> [{ userId: score }, { userId: score }, ...]
+          data.scores.map((x) => {
+            if (x[userData.id] > 0) {
+              // if object key matches this userId & is greater then 0
+              thisSongsData.score = x[userData.id]; // add the score to thisSongsData
+              userSessionData.push(thisSongsData); // add the object to userSessionData array
             }
+          });
+        }
+      });
+      const userHighestScores = [userSessionData[0]]; // preload high scores with the first object
+      userSessionData.map((session, idx) => {
+        // iterate through session scores
+        for (let i = 0; i < userHighestScores.length; i++) {
+          // iterate through high scores
+          if (session.songId === userHighestScores[i].songId) {
+            // if matching id is found, compare scores
+            if (session.score < userHighestScores[i].score) {
+              return;
+            } // if current high score is greater, disreguard and exit the loop
+            else {
+              userHighestScores[i].score = session.score; // if session score is greater, update high score with session score and exit the loop
+              return;
+            }
+          }
+        }
+        userHighestScores.push(session); // if no matches were found above, add session data to high scores
+      });
 
-            <form className="search__container">
+      if (userHighestScores.length > 1) {
+        // if there are scores
+        userHighestScores.map((highScore) => {
+          // loop through each score data
+          songs.map((song) => {
+            // loop through available songs
+            if (song._id === highScore.songId) {
+              // find the song the score belongs to
+              highScore.artist = song.artist; // add the artist and song name to score data
+              highScore.name = song.name;
+            }
+          });
+        });
 
-                <span className="searchInput">
+        setHighScores({ scores: userHighestScores, available: true }); // set high score data
+        setLoading({ ...loading, highScores: false }); // turn off preloader
+      } else {
+        setTimeout(() => {
+          setLoading({ ...loading, highScores: false }); // turn off preloader
+        }, 2000);
+      }
+    }
+  };
 
-                    <p>search for an existing karaoke track</p>
+  const handleCreateSession = (e) => {
+    e.preventDefault();
+    const newSessionObj = { host: userData.id, karaokeSong: formInputs.value };
+    createNewSession(newSessionObj);
+  };
 
-                    <Select
+  const createNewSession = (newSessionObj) => {
+    API.createSession(newSessionObj)
+      .then((sessionId) => {
+        setRedirectPage(<Redirect to={`/lyrics/${sessionId.data}`} />);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
-                        onChange={handleInputChange}
-                        onClick={handleSelectClick}
-                        classNamePrefix="select"
-                        className="searchInput"
-                        isSearchable={true}
-                        isClearable={true}
-                        options={search}
-                        name="searchBox"
+  return (
+    <Container className="center-align">
+      {loading.search ? (
+        <Preloader />
+      ) : (
+        <h5 className="search__title">{message}</h5>
+      )}
 
-                    />
+      <Row>
+        {!highScores.available && !loading.highScores ? (
+          <>
+            <h5>Welcome, {userData.username}!</h5>
+            <h5>What's your favorite song?</h5>
+          </>
+        ) : null}
 
-                    <AddSongModal
+        {loading.highScores ? (
+          <Preloader /> // display while scores attempt to load
+        ) : highScores.available ? (
+          <UserHighScores // display if scores are available
+            highScores={highScores}
+            search={search}
+            userData={userData}
+          />
+        ) : null}
+      </Row>
 
-                        userData={userData}
-                        setLoading={setLoading}
-                        setMessage={setMessage}
-                        createNewSession={createNewSession}
+      <form className="search__container">
+        <span className="searchInput">
+          {highScores.available ? (
+            <h5>What do you want to sing next?</h5>
+          ) : null}
 
-                    />
+          <Select
+            onChange={handleInputChange}
+            onClick={handleSelectClick}
+            classNamePrefix="select"
+            className="searchInput"
+            isSearchable={true}
+            isClearable={true}
+            options={search}
+            name="searchBox"
+          />
 
-                    {/* <Button onClick={getSongs} >refresh results</Button> */}
+          <AddSongModal
+            loading={loading}
+            userData={userData}
+            searchTitle={
+              formInputs.value /** TODO: how to pass searched value to AddSongModal  to avoid re-typing input*/
+            }
+            setLoading={setLoading}
+            setMessage={setMessage}
+            createNewSession={createNewSession}
+          />
 
-                    {formInputs.value
+          {formInputs.value ? (
+            <Button className="btn_purple" onClick={handleCreateSession}>
+              Get started!
+            </Button>
+          ) : (
+            <Button className="btn_purple" disabled>
+              Select a song
+            </Button>
+          )}
+        </span>
+      </form>
 
-                        ? <Button className="btn_purple" onClick={handleLyrics}>Get started!</Button>
-                        : <Button className="btn_purple" disabled>Select a song</Button>
-
-                    }
-
-                </span>
-            </form>
-
-            {redirectPage}
-
-        </Container >
-    )
+      {redirectPage}
+    </Container>
+  );
 }
 
 export default Search;

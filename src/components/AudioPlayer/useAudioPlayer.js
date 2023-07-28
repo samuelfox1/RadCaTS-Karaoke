@@ -1,48 +1,41 @@
 // source: https://codesandbox.io/s/5wwj02qy7k?file=/src/useAudioPlayer.js:0-1246
 import { useState, useEffect } from "react";
 
-function useAudioPlayer(isPlaying, setIsPlaying, audio) {
-    const [duration, setDuration] = useState();
-    const [curTime, setCurTime] = useState();
-    const [clickedTime, setClickedTime] = useState();
+function useAudioPlayer(setIsPlaying, audioRef) {
+  const [duration, setDuration] = useState();
+  const [curTime, setCurTime] = useState();
 
-    useEffect(() => {
+  useEffect(() => {
+    const ref = audioRef.current;
+    // state setters wrappers
+    const setAudioData = () => {
+      // console.log("setAudioData");
+      setDuration(ref.duration);
+      setCurTime(ref.currentTime);
+    };
 
-        // state setters wrappers
-        const setAudioData = () => {
-            setDuration(audio.duration);
-            setCurTime(audio.currentTime);
-        }
+    const setAudioTime = () => {
+      // console.log("setAudioTime");
+      setCurTime(ref.currentTime);
+    };
 
-        const setAudioTime = () => setCurTime(audio.currentTime);
+    // DOM listeners: update React state on DOM events
+    ref.addEventListener("loadeddata", setAudioData);
+    ref.addEventListener("timeupdate", setAudioTime);
+    ref.addEventListener("play", () => setIsPlaying(true));
 
-        // DOM listeners: update React state on DOM events
-        audio.addEventListener("loadedmetadata", setAudioData);
+    // effect cleanup
+    return () => {
+      // console.log("removeEventListener");
+      ref.removeEventListener("loadeddata", setAudioData);
+      ref.removeEventListener("timeupdate", setAudioTime);
+    };
+  });
 
-        audio.addEventListener("timeupdate", setAudioTime);
-
-        // React state listeners: update DOM on React state changes
-        isPlaying ? audio.play() : audio.pause();
-
-        if (clickedTime && clickedTime !== curTime) {
-            audio.currentTime = clickedTime;
-            setClickedTime(null);
-        }
-
-        // effect cleanup
-        return () => {
-            audio.removeEventListener("loadeddata", setAudioData);
-            audio.removeEventListener("timeupdate", setAudioTime);
-        }
-    });
-
-    return {
-        curTime,
-        duration,
-        isPlaying,
-        setIsPlaying,
-        setClickedTime
-    }
+  return {
+    curTime,
+    duration,
+  };
 }
 
 export default useAudioPlayer;
