@@ -33,24 +33,53 @@ function LyricsContainer({
   useEffect(() => {
     const time = Math.floor(curTime);
     const songLength = Math.floor(duration);
+
     const stagedLyricsStartTime = Math.floor(stagedLyrics.time);
 
     const targetActive = lyricList[index] || { test: "targetActive" };
     const targetStaged = lyricList[index + 1] || { test: "targetStaged" };
 
-    if (time === songLength && isPlaying) {
+    if (isPlaying && time === songLength) {
       handleFinish();
       return;
     }
 
+    if (lyricList.length === 0 || isNaN(time) || isNaN(stagedLyricsStartTime)) {
+      // console.log(
+      //   JSON.stringify(
+      //     {
+      //       lyricList: lyricList.length,
+      //       time,
+      //       stagedLyricsStartTime,
+      //     },
+      //     null,
+      //     2
+      //   )
+      // );
+
+      return;
+    }
+
+    // console.log(
+    //   JSON.stringify(
+    //     {
+    //       time,
+    //       stagedLyricsStartTime,
+    //       targetActive,
+    //       targetStaged,
+    //     },
+    //     null,
+    //     2
+    //   )
+    // );
     if (lyrics.isLoaded && lyricList.length) {
       if (index === lyricList.length) {
         setActiveLyrics({ text: "End lyrics" });
         setStagedLyrics({ text: "Thanks for playin'" });
       } else if (time === 0) {
         // if session is active and time is 0, start the first set of lyrics)
-        setActiveLyrics({ text: "(get ready!)" });
-        setStagedLyrics(targetActive);
+        setActiveLyrics(targetActive);
+        setStagedLyrics(targetStaged);
         // if session is active & time matches the time of the next object, access the nested conditional.
       } else if (time === stagedLyricsStartTime) {
         setActiveLyrics(targetActive);
@@ -58,7 +87,19 @@ function LyricsContainer({
         setIndex((c) => c + 1);
       }
     }
-  }, [lyrics.isLoaded, isPlaying, curTime, lyricList, index]);
+  }, [lyrics.isLoaded, isPlaying, curTime, lyricList]);
+
+  useEffect(() => {
+    console.log("lyricList");
+    if (lyricList.length > 0) {
+      setActiveLyrics({ text: "get ready!" });
+      setStagedLyrics(lyricList[0]);
+    }
+  }, [lyricList]);
+
+  useEffect(() => {
+    console.log({ index });
+  }, [index]);
 
   // update points based on new user input
   // make sure there are entries from user to avoid errors

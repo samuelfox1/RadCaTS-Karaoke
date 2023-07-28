@@ -150,7 +150,6 @@ export default function Session({
         }, 1000);
 
         console.log("message", message);
-        console.log("audioRef.current.src", audioRef.current.src);
         audioRef.current.src = `${process.env.REACT_APP_S3_BUCKET}/audio${message.path}`;
         console.log("audioRef.current.src", audioRef.current.src);
       }

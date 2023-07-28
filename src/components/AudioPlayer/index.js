@@ -26,8 +26,7 @@ function AudioPlayer({
 
   return (
     <Container className="center-align">
-      <AudioTop sessionData={sessionData} />
-
+      <AudioTop sessionData={sessionData} audioRef={audioRef} />
       <KaraokeBox
         pts={pts}
         setPts={setPts}

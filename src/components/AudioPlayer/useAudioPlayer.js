@@ -30,7 +30,7 @@ function useAudioPlayer(setIsPlaying, audioRef) {
       ref.removeEventListener("loadeddata", setAudioData);
       ref.removeEventListener("timeupdate", setAudioTime);
     };
-  });
+  }, []);
 
   return {
     curTime,
