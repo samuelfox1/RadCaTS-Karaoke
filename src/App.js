@@ -8,6 +8,7 @@ import Landing from "./pages/Landing";
 import API from "./utils/API";
 import "./App.css";
 
+// test
 function App() {
   let status, token, id, username, profilePicture, records;
   const userInfo = JSON.parse(localStorage.getItem("radcatsInfo"));
