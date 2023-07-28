@@ -45,33 +45,33 @@ function LyricsContainer({
     }
 
     if (lyricList.length === 0 || isNaN(time) || isNaN(stagedLyricsStartTime)) {
-      // console.log(
-      //   JSON.stringify(
-      //     {
-      //       lyricList: lyricList.length,
-      //       time,
-      //       stagedLyricsStartTime,
-      //     },
-      //     null,
-      //     2
-      //   )
-      // );
+      console.log(
+        JSON.stringify(
+          {
+            lyricList: lyricList.length,
+            time,
+            stagedLyricsStartTime,
+          },
+          null,
+          2
+        )
+      );
 
       return;
     }
 
-    // console.log(
-    //   JSON.stringify(
-    //     {
-    //       time,
-    //       stagedLyricsStartTime,
-    //       targetActive,
-    //       targetStaged,
-    //     },
-    //     null,
-    //     2
-    //   )
-    // );
+    console.log(
+      JSON.stringify(
+        {
+          time,
+          stagedLyricsStartTime,
+          targetActive,
+          targetStaged,
+        },
+        null,
+        2
+      )
+    );
     if (lyrics.isLoaded && lyricList.length) {
       if (index === lyricList.length) {
         setActiveLyrics({ text: "End lyrics" });
@@ -152,7 +152,7 @@ function LyricsContainer({
 
       setPts(points);
     }
-  }, [userInput]);
+  }, [userInput, lyricList]);
 
   return (
     <div className="center-align">

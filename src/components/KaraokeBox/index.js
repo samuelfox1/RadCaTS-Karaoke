@@ -38,10 +38,16 @@ function KaraokeBox({
   useEffect(() => {
     if (isPlaying) {
       SpeechRecognition.startListening({ continuous: true, language });
+      console.log("mic on");
     } else {
       SpeechRecognition.stopListening();
+      console.log("mic off");
     }
   }, [isPlaying, language]);
+
+  useEffect(() => {
+    console.log(userInput);
+  }, [userInput]);
 
   useEffect(() => {
     if (finalTranscript !== "") {
