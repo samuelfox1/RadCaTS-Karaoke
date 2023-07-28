@@ -104,7 +104,6 @@ function App() {
             sessionData={sessionData}
             setIsPlaying={setIsPlaying}
             setSessionData={setSessionData}
-            setIsPlaying={setIsPlaying}
           />
         </Route>
 
