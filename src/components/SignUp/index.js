@@ -6,9 +6,9 @@ import "./style.css";
 function SignUp({ loginSuccess }) {
   const trigger = <Button className="btn_purple">Sign Up</Button>;
   const [formInputs, setFormInputs] = useState({
-    username: "sjfox",
-    password: "password",
-    confirm: "password",
+    username: "",
+    password: "",
+    confirm: "",
     valid: false,
   });
 

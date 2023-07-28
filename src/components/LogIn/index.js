@@ -8,8 +8,8 @@ import "./style.css";
 function LogIn({ loginSuccess, setLoadingUser, setMessage }) {
   const trigger = <Button className="btn_purple">Sign In</Button>;
   const [formInputs, setFormInputs] = useState({
-    username: "sjfox",
-    password: "password",
+    username: "",
+    password: "",
   });
 
   const handleInputChange = (e) => {
